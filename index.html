@@ -103,11 +103,9 @@
             select, button {
                 width: 100%;
             }
-
             body {
                 padding: 15px;
             }
-
             .content {
                 font-size: 16px;
             }
@@ -162,86 +160,28 @@
         // Leitura automática do destino selecionado
         document.getElementById('destination').addEventListener('change', function () {
             const destino = this.options[this.selectedIndex].text;
-            falar(Destino selecionado: ${destino});
+            falar(`Destino selecionado: ${destino}`);
         });
 
         // Evento para o botão "Carregar Rota"
         document.getElementById('load-route-btn').addEventListener('click', function () {
             const destino = document.getElementById('destination').value;
-            falar(Carregando rota para ${destino});
+            falar(`Carregando rota para ${destino}`);
             carregarRota(destino);
         });
 
         // Função para carregar a rota (simulação)
         function carregarRota(destino) {
             const container = document.getElementById('miniplayer-container');
-            container.innerHTML = Rota para ${destino} em breve...;
-            falar(Instruções para o destino ${destino} serão fornecidas.);
+            container.innerHTML = `Rota para ${destino} em breve...`;
+            falar(`Instruções para o destino ${destino} serão fornecidas.`);
         }
 
-        // Função para reconhecimento de voz
-        function iniciarReconhecimentoVoz() {
-            if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) {
-                falar("Navegador não suporta reconhecimento de voz.");
-                return;
-            }
-            
-            const reconhecimento = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            reconhecimento.lang = 'pt-BR';
-
-            reconhecimento.onresult = (evento) => {
-                const comando = evento.results[0][0].transcript.toLowerCase();
-                processarComando(comando);
-            };
-
-            reconhecimento.onerror = () => {
-                falar('Erro no reconhecimento de voz, tente novamente.');
-            };
-
-            reconhecimento.start();
-        }
-
-        // Função para processar comandos de voz
-        function processarComando(comando) {
-            if (comando.includes('ativa acessibilidade')) {
-                document.getElementById('accessibility-switch').checked = true;
-                falar('Modo acessível ativado.');
-            } else if (comando.includes('desativa acessibilidade')) {
-                document.getElementById('accessibility-switch').checked = false;
-                falar('Modo acessível desativado.');
-            } else if (comando.includes('carregar rota para')) {
-                const destino = comando.replace('carregar rota para ', '').trim();
-                selecionarOpcao('destination', destino);
-                carregarRota(destino);
-            } else if (comando.includes('estou na') || comando.includes('localização')) {
-                let localizacao = comando.replace('estou na ', '').trim();
-                selecionarOpcao('current-location', localizacao);
-            } else {
-                falar('Comando não reconhecido.');
-            }
-        }
-
-        // Função para selecionar opções nos dropdowns
-        function selecionarOpcao(elementoId, valor) {
-            const elemento = document.getElementById(elementoId);
-            let encontrado = false;
-
-            for (let i = 0; i < elemento.options.length; i++) {
-                if (elemento.options[i].text.toLowerCase() === valor.toLowerCase()) {
-                    elemento.selectedIndex = i;
-                    falar(Selecionado: ${elemento.options[i].text});
-                    encontrado = true;
-                    break;
-                }
-            }
-
-            if (!encontrado) {
-                falar(Opção ${valor} não encontrada.);
-            }
-        }
-
-        // Iniciar o reconhecimento de voz ao clicar no botão
-        document.getElementById('start-voice-recognition-btn').addEventListener('click', iniciarReconhecimentoVoz);
+        // Função para iniciar o reconhecimento de voz (simulado)
+        document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
+            falar("Reconhecimento de voz iniciado");
+            document.getElementById('miniplayer-container').innerHTML = "Aguardando comando de voz...";
+        });
     </script>
 </body>
 </html>
