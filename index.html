@@ -85,18 +85,12 @@
             max-width: 300px;
         }
 
-        /* Switch de acessibilidade */
-        #accessibility-switch-label {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
+        iframe {
+            width: 100%;
+            max-width: 560px;
+            height: 315px;
+            border: none;
             margin-top: 10px;
-        }
-
-        #accessibility-switch {
-            margin-left: 10px;
-            width: 20px;
-            height: 20px;
         }
 
         /* Responsividade para dispositivos móveis */
@@ -104,9 +98,11 @@
             select, button {
                 width: 100%;
             }
+
             body {
                 padding: 15px;
             }
+
             .content {
                 font-size: 16px;
             }
@@ -158,12 +154,6 @@
             speechSynthesis.speak(utterance);
         }
 
-        // Leitura automática do destino selecionado
-        document.getElementById('destination').addEventListener('change', function () {
-            const destino = this.options[this.selectedIndex].text;
-            falar(`Destino selecionado: ${destino}`);
-        });
-
         // Evento para o botão "Carregar Rota"
         document.getElementById('load-route-btn').addEventListener('click', function () {
             const destino = document.getElementById('destination').value;
@@ -171,18 +161,15 @@
             carregarRota(destino);
         });
 
-        // Função para carregar a rota (simulação)
+        // Função para carregar a rota (exibe o vídeo)
         function carregarRota(destino) {
             const container = document.getElementById('miniplayer-container');
-            container.innerHTML = `Rota para ${destino} em breve...`;
-            falar(`Instruções para o destino ${destino} serão fornecidas.`);
+            container.innerHTML = `
+                <p>Rota para ${destino}:</p>
+                <iframe src="https://www.youtube.com/embed/A9toVIeSa3E?start=23" allowfullscreen></iframe>
+            `;
+            falar(`Instruções para o destino ${destino} serão exibidas abaixo.`);
         }
-
-        // Função para iniciar o reconhecimento de voz (simulado)
-        document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
-            falar("Reconhecimento de voz iniciado");
-            document.getElementById('miniplayer-container').innerHTML = "Aguardando comando de voz...";
-        });
     </script>
 </body>
 </html>
