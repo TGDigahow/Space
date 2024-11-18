@@ -16,92 +16,182 @@
             margin: 0;
             color: #333;
         }
+
         img.logo {
             width: 120px;
             height: auto;
-            margin-bottom: 20px;
+            margin-bottom: 0px;
+            border-radius: 0%; /* Remove o arredondamento */
+            box-shadow: none; /* Remove a sombra */
         }
-        label, select, button {
+
+        label {
+            font-size: 18px;
+            margin: 10px 0 5px;
+            color: #333;
+        }
+
+        select, button, input[type=checkbox] {
             margin: 10px 0;
+            padding: 12px 15px;
             font-size: 16px;
+            border-radius: 0px;
+            border: 0px solid #ccc;
+            transition: transform 0.2s;
+            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
         }
+
+        select {
+            width: 100%;
+            max-width: 250px;
+            background-color: #fff;
+        }
+
         button {
-            padding: 10px;
             background-color: #5c85d6;
             color: white;
             border: none;
             cursor: pointer;
+            width: 100%;
+            max-width: 250px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
         }
+
         button:hover {
             background-color: #4a73c2;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .content {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #e9f7f7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px;
+        }
+
+        #accessibility-switch-label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #accessibility-switch {
+            margin-left: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 600px) {
+            select, button {
+                width: 100%;
+            }
+            body {
+                padding: 15px;
+            }
+            .content {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
     <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logomarca" class="logo">
+
+    <label for="current-location">Onde você está?</label>
+    <select id="current-location" aria-label="Seleção de localização atual">
+        <option value="Entrada">Entrada</option>
+        <option value="Biblioteca">Biblioteca</option>
+        <option value="Auditório">Auditório</option>
+        <option value="Laboratório">Laboratório</option>
+    </select>
+
     <label for="destination">Onde quer ir?</label>
-    <select id="destination">
+    <select id="destination" aria-label="Seleção de destino">
         <option value="Biblioteca">Biblioteca</option>
         <option value="Financeiro">Financeiro</option>
         <option value="Secretaria">Secretaria</option>
         <option value="Sala 2.3">Sala 2.3</option>
     </select>
-    <button id="start-voice-recognition-btn">Iniciar reconhecimento de voz</button>
+    
+    <div id="accessibility-switch-label">
+        <label for="accessibility-switch">Acessibilidade</label>
+        <input type="checkbox" id="accessibility-switch" aria-label="Ativar modo de acessibilidade">
+    </div>
+
+    <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
+    <button id="start-voice-recognition-btn" aria-label="Iniciar reconhecimento de voz">Iniciar reconhecimento de voz</button>
+
     <div id="miniplayer-container" class="content" aria-live="assertive"></div>
 
     <script>
-        const falar = (mensagem) => {
+        function falar(mensagem) {
             const utterance = new SpeechSynthesisUtterance(mensagem);
             utterance.lang = 'pt-BR';
             speechSynthesis.speak(utterance);
+        }
+
+        const rotas = {
+            "Biblioteca": [
+                "Comece na entrada principal.",
+                "Siga até o corredor da direita.",
+                "Passe pela sala de informática.",
+                "A Biblioteca estará à sua esquerda."
+            ],
+            "Financeiro": [
+                "Comece na entrada principal.",
+                "Vire à esquerda e siga até o final do corredor.",
+                "O setor financeiro está na última porta à direita."
+            ],
+            "Secretaria": [
+                "Comece na entrada principal.",
+                "Vire à direita e passe pelo auditório.",
+                "A Secretaria estará à sua frente, ao lado do Laboratório."
+            ],
+            "Sala 2.3": [
+                "Comece na entrada principal.",
+                "Siga até o corredor da esquerda.",
+                "Vire à direita e a Sala 2.3 estará na segunda porta à direita."
+            ]
         };
 
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'pt-BR';
-        recognition.continuous = true;
-
-        let isAccessibilityActive = false;
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-
-            if (transcript === "olá space" && !isAccessibilityActive) {
-                isAccessibilityActive = true;
-                falar("Acessibilidade ativada. Onde deseja ir?");
-            } else if (isAccessibilityActive) {
-                if (transcript.includes("obrigado space")) {
-                    isAccessibilityActive = false;
-                    falar("Acessibilidade desativada. Até logo.");
-                } else {
-                    const destination = document.getElementById('destination').value;
-                    falar(`Carregando rota para ${destination}.`);
-                    carregarRota(destination);
-                }
-            }
-        };
-
-        recognition.onerror = (event) => {
-            console.error("Erro no reconhecimento de voz:", event.error);
-            falar("Erro no reconhecimento de voz.");
-        };
-
-        document.getElementById('start-voice-recognition-btn').addEventListener('click', () => {
-            recognition.start();
-            falar("Reconhecimento de voz iniciado.");
+        // Carregar rota e ativar acessibilidade
+        document.getElementById('load-route-btn').addEventListener('click', function () {
+            const destino = document.getElementById('destination').value;
+            const isAccessibilityOn = document.getElementById('accessibility-switch').checked;
+            falar(`Carregando rota para ${destino}`);
+            carregarRota(destino, isAccessibilityOn);
         });
 
-        const carregarRota = (destino) => {
+        function carregarRota(destino, isAccessibilityOn) {
             const container = document.getElementById('miniplayer-container');
-            const rotas = {
-                "Biblioteca": ["Siga em frente", "Vire à direita", "A Biblioteca estará à esquerda"],
-                "Financeiro": ["Vire à esquerda", "Siga até o final do corredor"],
-                "Secretaria": ["Siga em frente", "Passe pelo auditório", "A Secretaria estará à frente"],
-                "Sala 2.3": ["Vire à esquerda", "Siga até a segunda porta à direita"]
-            };
-            const instrucoes = rotas[destino];
-            container.innerHTML = `<p><strong>Instruções:</strong><br>${instrucoes.join('<br>')}</p>`;
-            instrucoes.forEach((passo) => falar(passo));
-        };
+            const instrucoes = rotas[destino].join('<br>');
+            container.innerHTML = `
+                <p><strong>Instruções para o destino ${destino}:</strong></p>
+                <p>${instrucoes}</p>
+                <iframe src="https://www.youtube.com/embed/A9toVIeSa3E?start=23" allowfullscreen></iframe>
+            `;
+            if (isAccessibilityOn) {
+                rotas[destino].forEach(instrução => falar(instrução));
+            } else {
+                falar(`Instruções para o destino ${destino} serão exibidas abaixo.`);
+            }
+        }
+
+        document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
+            falar("Seja Bem vindo ao SpaceMaps");
+            document.getElementById('miniplayer-container').innerHTML = "Aguardando comando de voz...";
+        });
     </script>
 </body>
 </html>
