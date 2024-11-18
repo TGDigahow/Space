@@ -98,11 +98,9 @@
             select, button {
                 width: 100%;
             }
-
             body {
                 padding: 15px;
             }
-
             .content {
                 font-size: 16px;
             }
@@ -154,6 +152,31 @@
             speechSynthesis.speak(utterance);
         }
 
+        // Mapeamento de destinos e suas rotas
+        const rotas = {
+            "Biblioteca": [
+                "Comece na entrada principal.",
+                "Siga até o corredor da direita.",
+                "Passe pela sala de informática.",
+                "A Biblioteca estará à sua esquerda."
+            ],
+            "Financeiro": [
+                "Comece na entrada principal.",
+                "Vire à esquerda e siga até o final do corredor.",
+                "O setor financeiro está na última porta à direita."
+            ],
+            "Secretaria": [
+                "Comece na entrada principal.",
+                "Vire à direita e passe pelo auditório.",
+                "A Secretaria estará à sua frente, ao lado do Laboratório."
+            ],
+            "Sala 2.3": [
+                "Comece na entrada principal.",
+                "Siga até o corredor da esquerda.",
+                "Vire à direita e a Sala 2.3 estará na segunda porta à direita."
+            ]
+        };
+
         // Evento para o botão "Carregar Rota"
         document.getElementById('load-route-btn').addEventListener('click', function () {
             const destino = document.getElementById('destination').value;
@@ -161,11 +184,13 @@
             carregarRota(destino);
         });
 
-        // Função para carregar a rota (exibe o vídeo)
+        // Função para carregar a rota (exibe o vídeo e texto)
         function carregarRota(destino) {
             const container = document.getElementById('miniplayer-container');
+            const instrucoes = rotas[destino].join('<br>');
             container.innerHTML = `
-                <p>Rota para ${destino}:</p>
+                <p><strong>Instruções para o destino ${destino}:</strong></p>
+                <p>${instrucoes}</p>
                 <iframe src="https://www.youtube.com/embed/A9toVIeSa3E?start=23" allowfullscreen></iframe>
             `;
             falar(`Instruções para o destino ${destino} serão exibidas abaixo.`);
