@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpaceMaps</title>
     <style>
-        /* Estilo geral do corpo */
         body {
             display: flex;
             flex-direction: column;
@@ -18,31 +18,28 @@
             color: #333;
         }
 
-        /* Estilo da logo */
         img.logo {
             width: 120px;
             height: auto;
-            margin-bottom: 00px;
-            border-radius: 00%;
-            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        /* Estilo dos labels */
         label {
             font-size: 18px;
             margin: 10px 0 5px;
             color: #333;
         }
 
-        /* Selects e inputs */
-        select, button, input[type="checkbox"] {
+        select, button, input[type=checkbox] {
             margin: 10px 0;
             padding: 12px 15px;
             font-size: 16px;
-            border-radius: 0px;
-            border: 0px solid #ccc;
+            border-radius: 8px;
+            border: 1px solid #ccc;
             transition: transform 0.2s;
-            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         select {
@@ -51,7 +48,6 @@
             background-color: #fff;
         }
 
-        /* Botão */
         button {
             background-color: #5c85d6;
             color: white;
@@ -72,7 +68,6 @@
             transform: scale(0.98);
         }
 
-        /* Conteúdo e mensagens */
         .content {
             margin-top: 20px;
             text-align: center;
@@ -85,33 +80,38 @@
             max-width: 300px;
         }
 
-        iframe {
-            width: 100%;
-            max-width: 560px;
-            height: 315px;
-            border: none;
+        #accessibility-switch-label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
             margin-top: 10px;
         }
 
-        /* Responsividade para dispositivos móveis */
+        #accessibility-switch {
+            margin-left: 10px;
+            width: 20px;
+            height: 20px;
+        }
+
         @media (max-width: 600px) {
             select, button {
                 width: 100%;
             }
+
             body {
                 padding: 15px;
             }
+
             .content {
                 font-size: 16px;
             }
         }
     </style>
 </head>
+
 <body>
-    <!-- Logomarca no topo -->
     <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logomarca" class="logo">
 
-    <!-- Dropdowns de Opções com Aria para acessibilidade -->
     <label for="current-location">Onde você está?</label>
     <select id="current-location" aria-label="Seleção de localização atual">
         <option value="Entrada">Entrada</option>
@@ -128,31 +128,24 @@
         <option value="Sala 2.3">Sala 2.3</option>
     </select>
 
-    <!-- Switch de Acessibilidade -->
     <div id="accessibility-switch-label">
         <label for="accessibility-switch">Acessibilidade</label>
         <input type="checkbox" id="accessibility-switch" aria-label="Ativar modo de acessibilidade">
     </div>
 
-    <!-- Botão para Carregar Rota -->
     <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
 
-    <!-- Botão para Iniciar Reconhecimento de Voz -->
     <button id="start-voice-recognition-btn" aria-label="Iniciar reconhecimento de voz">Iniciar reconhecimento de voz</button>
 
-    <!-- Container para Exibir o Resultado -->
     <div id="miniplayer-container" class="content" aria-live="assertive"></div>
 
-    <!-- Script para voz e comandos -->
     <script>
-        // Função para leitura em voz alta
         function falar(mensagem) {
             const utterance = new SpeechSynthesisUtterance(mensagem);
             utterance.lang = 'pt-BR';
             speechSynthesis.speak(utterance);
         }
 
-        // Mapeamento de destinos e suas rotas
         const rotas = {
             "Biblioteca": [
                 "Comece na entrada principal.",
@@ -177,14 +170,12 @@
             ]
         };
 
-        // Evento para o botão "Carregar Rota"
         document.getElementById('load-route-btn').addEventListener('click', function () {
             const destino = document.getElementById('destination').value;
             falar(`Carregando rota para ${destino}`);
             carregarRota(destino);
         });
 
-        // Função para carregar a rota (exibe o vídeo e texto)
         function carregarRota(destino) {
             const container = document.getElementById('miniplayer-container');
             const instrucoes = rotas[destino].join('<br>');
@@ -195,6 +186,12 @@
             `;
             falar(`Instruções para o destino ${destino} serão exibidas abaixo.`);
         }
+
+        document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
+            falar("Reconhecimento de voz iniciado");
+            document.getElementById('miniplayer-container').innerHTML = "Aguardando comando de voz...";
+        });
     </script>
 </body>
+
 </html>
