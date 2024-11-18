@@ -16,18 +16,21 @@
             margin: 0;
             color: #333;
         }
+
         img.logo {
             width: 120px;
             height: auto;
-            margin-bottom: 00px;
-            border-radius: 00%;
-            box-shadow: 0 0px 0px rgba(0, 0, 0, 0.2);
+            margin-bottom: 0px;
+            border-radius: 0%; /* Remove o arredondamento */
+            box-shadow: none; /* Remove a sombra */
         }
+
         label {
             font-size: 18px;
             margin: 10px 0 5px;
             color: #333;
         }
+
         select, button, input[type=checkbox] {
             margin: 10px 0;
             padding: 12px 15px;
@@ -37,11 +40,13 @@
             transition: transform 0.2s;
             box-shadow: 0 0px 0px rgba(0, 0, 0, 0.1);
         }
+
         select {
             width: 100%;
             max-width: 250px;
             background-color: #fff;
         }
+
         button {
             background-color: #5c85d6;
             color: white;
@@ -52,13 +57,16 @@
             font-weight: bold;
             transition: background-color 0.3s, transform 0.2s;
         }
+
         button:hover {
             background-color: #4a73c2;
             transform: scale(1.02);
         }
+
         button:active {
             transform: scale(0.98);
         }
+
         .content {
             margin-top: 20px;
             text-align: center;
@@ -70,17 +78,20 @@
             width: 100%;
             max-width: 300px;
         }
+
         #accessibility-switch-label {
             display: flex;
             align-items: center;
             font-size: 16px;
             margin-top: 10px;
         }
+
         #accessibility-switch {
             margin-left: 10px;
             width: 20px;
             height: 20px;
         }
+
         @media (max-width: 600px) {
             select, button {
                 width: 100%;
@@ -96,7 +107,7 @@
 </head>
 <body>
     <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logomarca" class="logo">
-    
+
     <label for="current-location">Onde você está?</label>
     <select id="current-location" aria-label="Seleção de localização atual">
         <option value="Entrada">Entrada</option>
@@ -104,7 +115,7 @@
         <option value="Auditório">Auditório</option>
         <option value="Laboratório">Laboratório</option>
     </select>
-    
+
     <label for="destination">Onde quer ir?</label>
     <select id="destination" aria-label="Seleção de destino">
         <option value="Biblioteca">Biblioteca</option>
@@ -112,7 +123,7 @@
         <option value="Secretaria">Secretaria</option>
         <option value="Sala 2.3">Sala 2.3</option>
     </select>
-
+    
     <div id="accessibility-switch-label">
         <label for="accessibility-switch">Acessibilidade</label>
         <input type="checkbox" id="accessibility-switch" aria-label="Ativar modo de acessibilidade">
@@ -120,9 +131,9 @@
 
     <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
     <button id="start-voice-recognition-btn" aria-label="Iniciar reconhecimento de voz">Iniciar reconhecimento de voz</button>
-    
+
     <div id="miniplayer-container" class="content" aria-live="assertive"></div>
-    
+
     <script>
         function falar(mensagem) {
             const utterance = new SpeechSynthesisUtterance(mensagem);
@@ -158,7 +169,6 @@
         document.getElementById('load-route-btn').addEventListener('click', function () {
             const destino = document.getElementById('destination').value;
             const isAccessibilityOn = document.getElementById('accessibility-switch').checked;
-
             falar(`Carregando rota para ${destino}`);
             carregarRota(destino, isAccessibilityOn);
         });
@@ -171,7 +181,6 @@
                 <p>${instrucoes}</p>
                 <iframe src="https://www.youtube.com/embed/A9toVIeSa3E?start=23" allowfullscreen></iframe>
             `;
-
             if (isAccessibilityOn) {
                 rotas[destino].forEach(instrução => falar(instrução));
             } else {
