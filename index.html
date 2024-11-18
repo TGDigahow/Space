@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,7 +16,6 @@
             margin: 0;
             color: #333;
         }
-
         img.logo {
             width: 120px;
             height: auto;
@@ -25,13 +23,11 @@
             border-radius: 50%;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
         label {
             font-size: 18px;
             margin: 10px 0 5px;
             color: #333;
         }
-
         select, button, input[type=checkbox] {
             margin: 10px 0;
             padding: 12px 15px;
@@ -41,13 +37,11 @@
             transition: transform 0.2s;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-
         select {
             width: 100%;
             max-width: 250px;
             background-color: #fff;
         }
-
         button {
             background-color: #5c85d6;
             color: white;
@@ -58,16 +52,13 @@
             font-weight: bold;
             transition: background-color 0.3s, transform 0.2s;
         }
-
         button:hover {
             background-color: #4a73c2;
             transform: scale(1.02);
         }
-
         button:active {
             transform: scale(0.98);
         }
-
         .content {
             margin-top: 20px;
             text-align: center;
@@ -79,39 +70,33 @@
             width: 100%;
             max-width: 300px;
         }
-
         #accessibility-switch-label {
             display: flex;
             align-items: center;
             font-size: 16px;
             margin-top: 10px;
         }
-
         #accessibility-switch {
             margin-left: 10px;
             width: 20px;
             height: 20px;
         }
-
         @media (max-width: 600px) {
             select, button {
                 width: 100%;
             }
-
             body {
                 padding: 15px;
             }
-
             .content {
                 font-size: 16px;
             }
         }
     </style>
 </head>
-
 <body>
     <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logomarca" class="logo">
-
+    
     <label for="current-location">Onde você está?</label>
     <select id="current-location" aria-label="Seleção de localização atual">
         <option value="Entrada">Entrada</option>
@@ -119,7 +104,7 @@
         <option value="Auditório">Auditório</option>
         <option value="Laboratório">Laboratório</option>
     </select>
-
+    
     <label for="destination">Onde quer ir?</label>
     <select id="destination" aria-label="Seleção de destino">
         <option value="Biblioteca">Biblioteca</option>
@@ -134,11 +119,10 @@
     </div>
 
     <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
-
     <button id="start-voice-recognition-btn" aria-label="Iniciar reconhecimento de voz">Iniciar reconhecimento de voz</button>
-
+    
     <div id="miniplayer-container" class="content" aria-live="assertive"></div>
-
+    
     <script>
         function falar(mensagem) {
             const utterance = new SpeechSynthesisUtterance(mensagem);
@@ -170,13 +154,16 @@
             ]
         };
 
+        // Carregar rota e ativar acessibilidade
         document.getElementById('load-route-btn').addEventListener('click', function () {
             const destino = document.getElementById('destination').value;
+            const isAccessibilityOn = document.getElementById('accessibility-switch').checked;
+
             falar(`Carregando rota para ${destino}`);
-            carregarRota(destino);
+            carregarRota(destino, isAccessibilityOn);
         });
 
-        function carregarRota(destino) {
+        function carregarRota(destino, isAccessibilityOn) {
             const container = document.getElementById('miniplayer-container');
             const instrucoes = rotas[destino].join('<br>');
             container.innerHTML = `
@@ -184,7 +171,12 @@
                 <p>${instrucoes}</p>
                 <iframe src="https://www.youtube.com/embed/A9toVIeSa3E?start=23" allowfullscreen></iframe>
             `;
-            falar(`Instruções para o destino ${destino} serão exibidas abaixo.`);
+
+            if (isAccessibilityOn) {
+                rotas[destino].forEach(instrução => falar(instrução));
+            } else {
+                falar(`Instruções para o destino ${destino} serão exibidas abaixo.`);
+            }
         }
 
         document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
@@ -193,5 +185,4 @@
         });
     </script>
 </body>
-
 </html>
