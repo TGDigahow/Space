@@ -2,103 +2,136 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Maps</title>
+    <title>SpaceMap</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: start;
-            margin: 0;
-            padding: 20px;
+            font-family: Arial, sans-serif;
             background-color: #f4f4f4;
+            padding: 20px;
         }
-        .logo {
+
+        img.logo {
             width: 150px;
             height: 150px;
             margin-bottom: 20px;
         }
-        .dropdown, .switch-container, .button {
+
+        select, button, input[type="checkbox"] {
             margin: 10px 0;
-            width: 100%;
-            max-width: 300px;
+            padding: 8px;
+            font-size: 16px;
         }
-        .result-container {
+
+        .content {
             margin-top: 20px;
             text-align: center;
         }
-        img {
-            width: 300px;
-            height: 200px;
-            object-fit: cover;
+
+        .hidden {
+            position: absolute;
+            left: -9999px;
         }
     </style>
 </head>
 <body>
-    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUUy5ra4FEpKSxzzg5U4uQVa5_j-pB5my--L8lPC_ZfFREclxrelYA4XB82-4sZ8A7Kr0&usqp=CAU" alt="Logo" class="logo">
-    <select id="current-location" class="dropdown">
-        <option value="">Onde você está?</option>
-        <option value="Biblioteca">Biblioteca</option>
-        <option value="Financeiro">Financeiro</option>
-        <option value="Secretaria">Secretaria</option>
-        <option value="Sala 2.3">Sala 2.3</option>
-        <option value="Portaria">Portaria</option>
-    </select>
-    <select id="destination" class="dropdown">
-        <option value="">Selecione uma opção</option>
-        <option value="Biblioteca">Biblioteca</option>
-        <option value="Financeiro">Financeiro</option>
-        <option value="Secretaria">Secretaria</option>
-        <option value="Sala 2.3">Sala 2.3</option>
-        <option value="Portaria">Portaria</option>
-    </select>
-    <div class="switch-container">
-        <label>
-            <input type="checkbox" id="accessibility">
-            Acessibilidade
-        </label>
-    </div>
-    <button id="load-route" class="button">Carregar Rota</button>
-    <div class="result-container" id="result"></div>
+    <!-- Logomarca -->
+    <img src="SpaceMap.png" alt="Logomarca" class="logo">
 
+    <!-- Dropdown de Opções com Aria para acessibilidade -->
+    <label for="options">Selecione uma opção:</label>
+    <select id="options" aria-label="Seleção de destino">
+        <option value="Biblioteca">Biblioteca</option>
+        <option value="Financeiro">Financeiro</option>
+        <option value="Secretaria">Secretaria</option>
+        <option value="Sala 2.3">Sala 2.3</option>
+    </select>
+
+    <!-- Switch de Acessibilidade -->
+    <label for="accessibility-switch">
+        <input type="checkbox" id="accessibility-switch" aria-label="Ativar modo de acessibilidade">
+        Acessibilidade
+    </label>
+
+    <!-- Botão para Carregar Rota -->
+    <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
+
+    <!-- Container para Exibir o Resultado -->
+    <div id="miniplayer-container" class="content" aria-live="assertive"></div>
+
+    <!-- Script para voz e comandos -->
     <script>
-        const locationImages = {
-            Biblioteca: ["A:\\mapa2.gif", "A:\\mapa6.gif"],
-            Financeiro: ["A:\\mapa3.gif", "A:\\mapa7.gif"],
-            Secretaria: ["A:\\mapa1.png", "A:\\mapappagaio.gif"],
-            "Sala 2.3": ["A:\\mapa5.gif", "A:\\escada.gif"],
-            Portaria: ["A:\\mapa4.gif", "A:\\mapa8.gif"]
-        };
+        // Função para leitura em voz alta
+        function falar(mensagem) {
+            const utterance = new SpeechSynthesisUtterance(mensagem);
+            utterance.lang = 'pt-BR';
+            speechSynthesis.speak(utterance);
+        }
 
-        document.getElementById("load-route").addEventListener("click", () => {
-            const currentLocation = document.getElementById("current-location").value;
-            const destination = document.getElementById("destination").value;
-            const accessibility = document.getElementById("accessibility").checked;
-            const resultContainer = document.getElementById("result");
-
-            if (!currentLocation || !destination) {
-                resultContainer.innerHTML = "<p>Selecione um local de destino e sua localização atual!</p>";
-                return;
-            }
-
-            const imageSrc = locationImages[destination][accessibility ? 0 : 1];
-            resultContainer.innerHTML = `
-                <p>Saindo de: ${currentLocation}</p>
-                <p>Destino: ${destination} (${accessibility ? "com acessibilidade" : "sem acessibilidade"})</p>
-                <img src="${imageSrc}" alt="Mapa">
-            `;
-
-            if (accessibility) {
-                startVoiceCommand(destination);
-            }
+        // Leitura automática do destino selecionado
+        document.getElementById('options').addEventListener('change', function () {
+            const destino = this.options[this.selectedIndex].text;
+            falar(`Destino selecionado: ${destino}`);
         });
 
-        function startVoiceCommand(destination) {
-            alert(`Comando de voz ativado. Perguntei: "Para onde você deseja ir?"`);
-            console.log(`Usuário respondeu: ${destination}`);
+        // Evento para o botão "Carregar Rota"
+        document.getElementById('load-route-btn').addEventListener('click', function () {
+            const destino = document.getElementById('options').value;
+            falar(`Carregando rota para ${destino}`);
+            carregarRota(destino);
+        });
+
+        // Função para carregar a rota (simulação)
+        function carregarRota(destino) {
+            const container = document.getElementById('miniplayer-container');
+            container.innerHTML = `Rota para ${destino} em breve...`;
+            falar(`Instruções para o destino ${destino} serão fornecidas.`);
         }
+
+        // Função para reconhecimento de voz
+        function iniciarReconhecimentoVoz() {
+            const reconhecimento = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            reconhecimento.lang = 'pt-BR';
+
+            reconhecimento.onresult = (evento) => {
+                const comando = evento.results[0][0].transcript.toLowerCase();
+                if (comando.includes('biblioteca')) {
+                    document.getElementById('options').value = 'Biblioteca';
+                    falar('Biblioteca selecionada');
+                } else if (comando.includes('financeiro')) {
+                    document.getElementById('options').value = 'Financeiro';
+                    falar('Financeiro selecionado');
+                } else if (comando.includes('secretaria')) {
+                    document.getElementById('options').value = 'Secretaria';
+                    falar('Secretaria selecionada');
+                } else if (comando.includes('sala 2.3')) {
+                    document.getElementById('options').value = 'Sala 2.3';
+                    falar('Sala 2.3 selecionada');
+                } else if (comando.includes('carregar rota')) {
+                    document.getElementById('load-route-btn').click();
+                } else {
+                    falar('Comando não reconhecido');
+                }
+            };
+
+            reconhecimento.onerror = (evento) => {
+                falar('Erro no reconhecimento de voz, tente novamente.');
+            };
+
+            reconhecimento.start();
+        }
+
+        // Iniciar reconhecimento de voz ao clicar em um botão
+        document.getElementById('accessibility-switch').addEventListener('change', function () {
+            if (this.checked) {
+                falar('Modo acessível ativado. Aguarde pelo comando de voz.');
+                iniciarReconhecimentoVoz();
+            } else {
+                falar('Modo acessível desativado.');
+            }
+        });
     </script>
 </body>
 </html>
