@@ -22,9 +22,15 @@
             width: 80%;
             height: 315px;
         }
+        img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 <body>
+    <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
     <h1>Simulador de Rotas com Acessibilidade</h1>
     
     <!-- Dropdowns para selecionar localização e destino -->
@@ -36,7 +42,7 @@
         <option value="Sala 2.3">Sala 2.3</option>
         <option value="Portaria">Portaria</option>
     </select>
-    
+
     <select id="destination">
         <option value="">Selecione um destino</option>
         <option value="Biblioteca">Biblioteca</option>
@@ -45,7 +51,7 @@
         <option value="Sala 2.3">Sala 2.3</option>
         <option value="Portaria">Portaria</option>
     </select>
-    
+
     <!-- Acessibilidade -->
     <div>
         <label>
@@ -53,12 +59,12 @@
             Ativar Acessibilidade
         </label>
     </div>
-    
+
     <button id="load-route">Carregar Rota</button>
-    
+
     <!-- Exibição do vídeo -->
     <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
-    
+
     <script>
         const routeDescriptions = {
             Biblioteca: "Siga em frente, vire à esquerda e suba as escadas para chegar à biblioteca.",
