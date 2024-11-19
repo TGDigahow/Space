@@ -2,186 +2,123 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>SpaceMaps</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Maps</title>
     <style>
-        /* Estilo geral do corpo */
         body {
+            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-family: Arial, sans-serif;
-            background-color: #e6f2f2;
-            padding: 20px;
-            height: 100vh;
+            justify-content: start;
             margin: 0;
-            color: #333;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-
-        /* Estilo da logo */
-        img.logo {
-            width: 120px;
-            height: auto;
+        .logo {
+            width: 150px;
+            height: 150px;
             margin-bottom: 20px;
-            border-radius: 50%;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-        /* Estilo dos labels */
-        label {
-            font-size: 18px;
-            margin: 10px 0 5px;
-            color: #333;
-        }
-
-        /* Selects e inputs */
-        select, button, input[type="checkbox"] {
+        .dropdown, .switch-container, .button {
             margin: 10px 0;
-            padding: 12px 15px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            transition: transform 0.2s;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        select {
-            width: 100%;
-            max-width: 250px;
-            background-color: #fff;
-        }
-
-        /* Botão */
-        button {
-            background-color: #5c85d6;
-            color: white;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            max-width: 250px;
-            font-weight: bold;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button:hover {
-            background-color: #4a73c2;
-            transform: scale(1.02);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        /* Conteúdo e mensagens */
-        .content {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 18px;
-            padding: 10px;
-            border-radius: 8px;
-            background-color: #e9f7f7;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 300px;
         }
-
-        /* Switch de acessibilidade */
-        #accessibility-switch-label {
-            display: flex;
-            align-items: center;
-            font-size: 16px;
-            margin-top: 10px;
+        .result-container {
+            margin-top: 20px;
+            text-align: center;
         }
-
-        #accessibility-switch {
-            margin-left: 10px;
-            width: 20px;
-            height: 20px;
-        }
-
-        /* Responsividade para dispositivos móveis */
-        @media (max-width: 600px) {
-            select, button {
-                width: 100%;
-            }
-            body {
-                padding: 15px;
-            }
-            .content {
-                font-size: 16px;
-            }
+        img {
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
         }
     </style>
 </head>
 <body>
-    <!-- Logomarca -->
-    <img src="SpaceMap.png" alt="Logomarca" class="logo">
+    <!-- Logo -->
+    <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" 
+         alt="Logo Space Maps" 
+         class="logo">
 
-    <!-- Dropdowns de Opções com Aria para acessibilidade -->
-    <label for="current-location">Onde você está?</label>
-    <select id="current-location" aria-label="Seleção de localização atual">
-        <option value="Entrada">Entrada</option>
-        <option value="Biblioteca">Biblioteca</option>
-        <option value="Auditório">Auditório</option>
-        <option value="Laboratório">Laboratório</option>
-    </select>
-
-    <label for="destination">Onde quer ir?</label>
-    <select id="destination" aria-label="Seleção de destino">
+    <!-- Localização atual -->
+    <select id="current-location" class="dropdown">
+        <option value="">Onde você está?</option>
         <option value="Biblioteca">Biblioteca</option>
         <option value="Financeiro">Financeiro</option>
         <option value="Secretaria">Secretaria</option>
         <option value="Sala 2.3">Sala 2.3</option>
+        <option value="Portaria">Portaria</option>
     </select>
 
-    <!-- Switch de Acessibilidade -->
-    <div id="accessibility-switch-label">
-        <label for="accessibility-switch">Acessibilidade</label>
-        <input type="checkbox" id="accessibility-switch" aria-label="Ativar modo de acessibilidade">
+    <!-- Destino -->
+    <select id="destination" class="dropdown">
+        <option value="">Selecione uma opção</option>
+        <option value="Biblioteca">Biblioteca</option>
+        <option value="Financeiro">Financeiro</option>
+        <option value="Secretaria">Secretaria</option>
+        <option value="Sala 2.3">Sala 2.3</option>
+        <option value="Portaria">Portaria</option>
+    </select>
+
+    <!-- Acessibilidade -->
+    <div class="switch-container">
+        <label>
+            <input type="checkbox" id="accessibility">
+            Acessibilidade
+        </label>
     </div>
 
-    <!-- Botão para Carregar Rota -->
-    <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
+    <!-- Botão para carregar rota -->
+    <button id="load-route" class="button">Carregar Rota</button>
 
-    <!-- Botão para Iniciar Reconhecimento de Voz -->
-    <button id="start-voice-recognition-btn" aria-label="Iniciar reconhecimento de voz">Iniciar reconhecimento de voz</button>
+    <!-- Resultado -->
+    <div class="result-container" id="result"></div>
 
-    <!-- Container para Exibir o Resultado -->
-    <div id="miniplayer-container" class="content" aria-live="assertive"></div>
-
-    <!-- Script para voz e comandos -->
     <script>
-        // Função para leitura em voz alta
-        function falar(mensagem) {
-            const utterance = new SpeechSynthesisUtterance(mensagem);
-            utterance.lang = 'pt-BR';
-            speechSynthesis.speak(utterance);
+        // Definição das rotas e imagens
+        const locationImages = {
+            Biblioteca: ["A:\\mapa2.gif", "A:\\mapa6.gif"],
+            Financeiro: ["A:\\mapa3.gif", "A:\\mapa7.gif"],
+            Secretaria: ["A:\\mapa1.png", "A:\\mapappagaio.gif"],
+            "Sala 2.3": ["A:\\mapa5.gif", "A:\\escada.gif"],
+            Portaria: ["A:\\mapa4.gif", "A:\\mapa8.gif"]
+        };
+
+        // Evento de clique no botão
+        document.getElementById("load-route").addEventListener("click", () => {
+            const currentLocation = document.getElementById("current-location").value;
+            const destination = document.getElementById("destination").value;
+            const accessibility = document.getElementById("accessibility").checked;
+            const resultContainer = document.getElementById("result");
+
+            if (!currentLocation || !destination) {
+                resultContainer.innerHTML = "<p>Selecione um local de destino e sua localização atual!</p>";
+                return;
+            }
+
+            // Definir imagem com base na acessibilidade
+            const imageSrc = locationImages[destination][accessibility ? 0 : 1];
+
+            // Atualizar resultado com detalhes e imagem
+            resultContainer.innerHTML = `
+                <p>Saindo de: ${currentLocation}</p>
+                <p>Destino: ${destination} (${accessibility ? "com acessibilidade" : "sem acessibilidade"})</p>
+                <img src="${imageSrc}" alt="Mapa">
+            `;
+
+            // Ativar comando de voz no modo acessibilidade
+            if (accessibility) {
+                startVoiceCommand(destination);
+            }
+        });
+
+        // Simular comando de voz
+        function startVoiceCommand(destination) {
+            alert(`Comando de voz ativado. Destino definido como: "${destination}".`);
+            console.log(`Simulação de rota para: ${destination}`);
         }
-
-        // Leitura automática do destino selecionado
-        document.getElementById('destination').addEventListener('change', function () {
-            const destino = this.options[this.selectedIndex].text;
-            falar(`Destino selecionado: ${destino}`);
-        });
-
-        // Evento para o botão "Carregar Rota"
-        document.getElementById('load-route-btn').addEventListener('click', function () {
-            const destino = document.getElementById('destination').value;
-            falar(`Carregando rota para ${destino}`);
-            carregarRota(destino);
-        });
-
-        // Função para carregar a rota (simulação)
-        function carregarRota(destino) {
-            const container = document.getElementById('miniplayer-container');
-            container.innerHTML = `Rota para ${destino} em breve...`;
-            falar(`Instruções para o destino ${destino} serão fornecidas.`);
-        }
-
-        // Função para iniciar o reconhecimento de voz (simulado)
-        document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
-            falar("Reconhecimento de voz iniciado");
-            document.getElementById('miniplayer-container').innerHTML = "Aguardando comando de voz...";
-        });
     </script>
 </body>
 </html>
