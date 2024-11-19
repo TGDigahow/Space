@@ -31,7 +31,7 @@
 </head>
 <body>
     <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
-   
+    
     <!-- Dropdowns para selecionar localização e destino -->
     <select id="current-location">
         <option value="">Onde você está?</option>
@@ -41,7 +41,6 @@
         <option value="Sala 2.3">Sala 2.3</option>
         <option value="Portaria">Portaria</option>
     </select>
-
     <select id="destination">
         <option value="">Selecione um destino</option>
         <option value="Biblioteca">Biblioteca</option>
@@ -58,7 +57,6 @@
             Ativar Acessibilidade
         </label>
     </div>
-
     <button id="load-route">Carregar Rota</button>
 
     <!-- Exibição do vídeo -->
@@ -72,7 +70,6 @@
             "Sala 2.3": "Suba dois lances de escada e vire à direita para a sala 2.3.",
             Portaria: "A portaria está localizada logo na entrada do prédio."
         };
-
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
 
         document.getElementById("load-route").addEventListener("click", () => {
@@ -107,7 +104,6 @@
                 alert("Seu navegador não suporta reconhecimento de voz.");
                 return;
             }
-
             const recognition = new webkitSpeechRecognition();
             recognition.lang = "pt-BR";
             recognition.continuous = false;
