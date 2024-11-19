@@ -27,11 +27,19 @@
             height: auto;
             margin-bottom: 20px;
         }
+        #route-description {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            font-size: 18px;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
-    
+
     <!-- Dropdowns para selecionar localização e destino -->
     <select id="current-location">
         <option value="">Onde você está?</option>
@@ -62,6 +70,9 @@
     <!-- Exibição do vídeo -->
     <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
 
+    <!-- Descrição da rota -->
+    <div id="route-description"></div>
+
     <script>
         const routeDescriptions = {
             Biblioteca: "Siga em frente, vire à esquerda e suba as escadas para chegar à biblioteca.",
@@ -70,6 +81,7 @@
             "Sala 2.3": "Suba dois lances de escada e vire à direita para a sala 2.3.",
             Portaria: "A portaria está localizada logo na entrada do prédio."
         };
+
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
 
         document.getElementById("load-route").addEventListener("click", () => {
@@ -77,17 +89,29 @@
             const destination = document.getElementById("destination").value;
             const accessibility = document.getElementById("accessibility").checked;
             const videoFrame = document.getElementById("route-video");
+            const routeDescriptionDiv = document.getElementById("route-description");
 
             if (!currentLocation || !destination) {
                 alert("Selecione um local de partida e um destino.");
                 return;
             }
 
-            // Informar rota via áudio
+            if (currentLocation === destination) {
+                alert("O ponto de partida e o destino são iguais.");
+                return;
+            }
+
+            // Informar rota via texto e áudio
             const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
-            const speech = new SpeechSynthesisUtterance(description);
-            speech.lang = "pt-BR";
-            window.speechSynthesis.speak(speech);
+            routeDescriptionDiv.textContent = description;
+
+            if ("speechSynthesis" in window) {
+                const speech = new SpeechSynthesisUtterance(description);
+                speech.lang = "pt-BR";
+                window.speechSynthesis.speak(speech);
+            } else {
+                alert("Seu navegador não suporta síntese de voz.");
+            }
 
             // Carregar vídeo associado à rota
             videoFrame.src = videoUrl;
@@ -98,12 +122,12 @@
             }
         });
 
-        // Ativar reconhecimento de voz
         function startVoiceInput() {
             if (!("webkitSpeechRecognition" in window)) {
                 alert("Seu navegador não suporta reconhecimento de voz.");
                 return;
             }
+
             const recognition = new webkitSpeechRecognition();
             recognition.lang = "pt-BR";
             recognition.continuous = false;
