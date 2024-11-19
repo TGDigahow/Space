@@ -3,47 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Space Maps</title>
+    <title>Simulação de Rotas</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: start;
+            text-align: center;
             margin: 0;
             padding: 20px;
             background-color: #f4f4f4;
         }
-        .logo {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 20px;
+        select, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
         }
-        .dropdown, .switch-container, .button {
-            margin: 10px 0;
-            width: 100%;
-            max-width: 300px;
-        }
-        .result-container {
+        iframe {
             margin-top: 20px;
-            text-align: center;
-        }
-        img {
-            width: 300px;
-            height: 200px;
-            object-fit: cover;
+            width: 80%;
+            height: 315px;
         }
     </style>
 </head>
 <body>
-    <!-- Logo -->
-    <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" 
-         alt="Logo Space Maps" 
-         class="logo">
-
-    <!-- Localização atual -->
-    <select id="current-location" class="dropdown">
+    <h1>Simulador de Rotas com Acessibilidade</h1>
+    
+    <!-- Dropdowns para selecionar localização e destino -->
+    <select id="current-location">
         <option value="">Onde você está?</option>
         <option value="Biblioteca">Biblioteca</option>
         <option value="Financeiro">Financeiro</option>
@@ -51,73 +36,92 @@
         <option value="Sala 2.3">Sala 2.3</option>
         <option value="Portaria">Portaria</option>
     </select>
-
-    <!-- Destino -->
-    <select id="destination" class="dropdown">
-        <option value="">Selecione uma opção</option>
+    
+    <select id="destination">
+        <option value="">Selecione um destino</option>
         <option value="Biblioteca">Biblioteca</option>
         <option value="Financeiro">Financeiro</option>
         <option value="Secretaria">Secretaria</option>
         <option value="Sala 2.3">Sala 2.3</option>
         <option value="Portaria">Portaria</option>
     </select>
-
+    
     <!-- Acessibilidade -->
-    <div class="switch-container">
+    <div>
         <label>
             <input type="checkbox" id="accessibility">
-            Acessibilidade
+            Ativar Acessibilidade
         </label>
     </div>
-
-    <!-- Botão para carregar rota -->
-    <button id="load-route" class="button">Carregar Rota</button>
-
-    <!-- Resultado -->
-    <div class="result-container" id="result"></div>
-
+    
+    <button id="load-route">Carregar Rota</button>
+    
+    <!-- Exibição do vídeo -->
+    <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
+    
     <script>
-        // Definição das rotas e imagens
-        const locationImages = {
-            Biblioteca: ["A:\\mapa2.gif", "A:\\mapa6.gif"],
-            Financeiro: ["A:\\mapa3.gif", "A:\\mapa7.gif"],
-            Secretaria: ["A:\\mapa1.png", "A:\\mapappagaio.gif"],
-            "Sala 2.3": ["A:\\mapa5.gif", "A:\\escada.gif"],
-            Portaria: ["A:\\mapa4.gif", "A:\\mapa8.gif"]
+        const routeDescriptions = {
+            Biblioteca: "Siga em frente, vire à esquerda e suba as escadas para chegar à biblioteca.",
+            Financeiro: "Vá até o final do corredor e entre na segunda porta à direita para o setor financeiro.",
+            Secretaria: "A secretaria está no térreo, próximo à entrada principal.",
+            "Sala 2.3": "Suba dois lances de escada e vire à direita para a sala 2.3.",
+            Portaria: "A portaria está localizada logo na entrada do prédio."
         };
 
-        // Evento de clique no botão
+        const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
+
         document.getElementById("load-route").addEventListener("click", () => {
             const currentLocation = document.getElementById("current-location").value;
             const destination = document.getElementById("destination").value;
             const accessibility = document.getElementById("accessibility").checked;
-            const resultContainer = document.getElementById("result");
+            const videoFrame = document.getElementById("route-video");
 
             if (!currentLocation || !destination) {
-                resultContainer.innerHTML = "<p>Selecione um local de destino e sua localização atual!</p>";
+                alert("Selecione um local de partida e um destino.");
                 return;
             }
 
-            // Definir imagem com base na acessibilidade
-            const imageSrc = locationImages[destination][accessibility ? 0 : 1];
+            // Informar rota via áudio
+            const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
+            const speech = new SpeechSynthesisUtterance(description);
+            speech.lang = "pt-BR";
+            window.speechSynthesis.speak(speech);
 
-            // Atualizar resultado com detalhes e imagem
-            resultContainer.innerHTML = `
-                <p>Saindo de: ${currentLocation}</p>
-                <p>Destino: ${destination} (${accessibility ? "com acessibilidade" : "sem acessibilidade"})</p>
-                <img src="${imageSrc}" alt="Mapa">
-            `;
+            // Carregar vídeo associado à rota
+            videoFrame.src = videoUrl;
 
-            // Ativar comando de voz no modo acessibilidade
+            // Ativar comando de voz no modo de acessibilidade
             if (accessibility) {
-                startVoiceCommand(destination);
+                startVoiceInput();
             }
         });
 
-        // Simular comando de voz
-        function startVoiceCommand(destination) {
-            alert(`Comando de voz ativado. Destino definido como: "${destination}".`);
-            console.log(`Simulação de rota para: ${destination}`);
+        // Ativar reconhecimento de voz
+        function startVoiceInput() {
+            if (!("webkitSpeechRecognition" in window)) {
+                alert("Seu navegador não suporta reconhecimento de voz.");
+                return;
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "pt-BR";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                alert("Reconhecimento de voz ativado. Fale o destino desejado.");
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                alert(`Você disse: ${transcript}`);
+            };
+
+            recognition.onerror = (event) => {
+                alert(`Erro no reconhecimento de voz: ${event.error}`);
+            };
+
+            recognition.start();
         }
     </script>
 </body>
