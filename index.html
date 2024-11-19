@@ -1,89 +1,187 @@
-import flet as ft
-import speech_recognition as sr
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>SpaceMaps</title>
+    <style>
+        /* Estilo geral do corpo */
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #e6f2f2;
+            padding: 20px;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
 
-def main(page: ft.Page):
-    page.title = "Free Way"
-    page.vertical_alignment = ft.MainAxisAlignment.START
-    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        /* Estilo da logo */
+        img.logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
 
-    # Logomarca
-    logo = ft.Image(src="A:/Free-Way-LOGO.png", width=150, height=150)
+        /* Estilo dos labels */
+        label {
+            font-size: 18px;
+            margin: 10px 0 5px;
+            color: #333;
+        }
 
-    # Opções de destinos
-    options = ft.Dropdown(
-        label="Selecione uma opção",
-        options=[
-            ft.dropdown.Option("Biblioteca"),
-            ft.dropdown.Option("Financeiro"),
-            ft.dropdown.Option("Secretaria"),
-            ft.dropdown.Option("Sala 2.3"),
-        ]
-    )
+        /* Selects e inputs */
+        select, button, input[type="checkbox"] {
+            margin: 10px 0;
+            padding: 12px 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    # Acessibilidade
-    accessibility_switch = ft.Switch(label="Acessibilidade", value=False)
+        select {
+            width: 100%;
+            max-width: 250px;
+            background-color: #fff;
+        }
 
-    miniplayer_container = ft.Container()
+        /* Botão */
+        button {
+            background-color: #5c85d6;
+            color: white;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            max-width: 250px;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.2s;
+        }
 
-    # Função para ativar comando de voz
-    def ativar_comando_voz():
-        recognizer = sr.Recognizer()
-        with sr.Microphone() as source:
-            print("Perguntando ao usuário: 'Deseja rota com acessibilidade?'")
-            audio = recognizer.listen(source)
-        
-        try:
-            resposta = recognizer.recognize_google(audio, language="pt-BR").lower()
-            if "sim" in resposta:
-                accessibility_switch.value = True
-            elif "não" in resposta:
-                accessibility_switch.value = False
-            else:
-                print("Resposta não reconhecida, mantendo o valor atual.")
-        except sr.UnknownValueError:
-            print("Não foi possível entender a resposta.")
-        except sr.RequestError:
-            print("Erro ao tentar acessar o serviço de reconhecimento de voz.")
-        
-        page.update()
+        button:hover {
+            background-color: #4a73c2;
+            transform: scale(1.02);
+        }
 
-    # Carregar rota baseada nas seleções
-    def carregar_rota(e):
-        selected_option = options.value
-        accessibility = "com acessibilidade" if accessibility_switch.value else "sem acessibilidade"
-        
-        # Caminho das imagens baseado na opção e acessibilidade
-        image_src = ""
-        if selected_option == "Biblioteca":
-            image_src = "A:/mapa2.gif" if accessibility_switch.value else "A:/mapa6.gif"
-        elif selected_option == "Financeiro":
-            image_src = "A:/mapa3.gif" if accessibility_switch.value else "A:/mapa7.gif"
-        elif selected_option == "Secretaria":
-            image_src = "A:/mapa1.png" if accessibility_switch.value else "A:/mapappagaio.gif"
-        elif selected_option == "Sala 2.3":
-            image_src = "A:/mapa5.gif" if accessibility_switch.value else "A:/escada.gif"
+        button:active {
+            transform: scale(0.98);
+        }
 
-        # Exibindo o conteúdo da rota selecionada
-        miniplayer_container.content = ft.Column([
-            ft.Text(f"Destino: {selected_option} ({accessibility})"),
-            ft.Image(src=image_src, width=300, height=200),
-        ])
-        page.update()
+        /* Conteúdo e mensagens */
+        .content {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #e9f7f7;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px;
+        }
 
-    # Botão para ativar o comando de voz
-    voz_button = ft.ElevatedButton(text="Ativar Comando de Voz", on_click=lambda _: ativar_comando_voz())
-    
-    # Botão para carregar rota
-    carregar_rota_button = ft.ElevatedButton(text="Carregar Rota", on_click=carregar_rota)
+        /* Switch de acessibilidade */
+        #accessibility-switch-label {
+            display: flex;
+            align-items: center;
+            font-size: 16px;
+            margin-top: 10px;
+        }
 
-    # Componentes da página
-    page.add(
-        logo,
-        options,
-        accessibility_switch,
-        voz_button,
-        carregar_rota_button,
-        miniplayer_container  
-    )
+        #accessibility-switch {
+            margin-left: 10px;
+            width: 20px;
+            height: 20px;
+        }
 
-ft.app(target=main)
+        /* Responsividade para dispositivos móveis */
+        @media (max-width: 600px) {
+            select, button {
+                width: 100%;
+            }
+            body {
+                padding: 15px;
+            }
+            .content {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Logomarca -->
+    <img src="SpaceMap.png" alt="Logomarca" class="logo">
+
+    <!-- Dropdowns de Opções com Aria para acessibilidade -->
+    <label for="current-location">Onde você está?</label>
+    <select id="current-location" aria-label="Seleção de localização atual">
+        <option value="Entrada">Entrada</option>
+        <option value="Biblioteca">Biblioteca</option>
+        <option value="Auditório">Auditório</option>
+        <option value="Laboratório">Laboratório</option>
+    </select>
+
+    <label for="destination">Onde quer ir?</label>
+    <select id="destination" aria-label="Seleção de destino">
+        <option value="Biblioteca">Biblioteca</option>
+        <option value="Financeiro">Financeiro</option>
+        <option value="Secretaria">Secretaria</option>
+        <option value="Sala 2.3">Sala 2.3</option>
+    </select>
+
+    <!-- Switch de Acessibilidade -->
+    <div id="accessibility-switch-label">
+        <label for="accessibility-switch">Acessibilidade</label>
+        <input type="checkbox" id="accessibility-switch" aria-label="Ativar modo de acessibilidade">
+    </div>
+
+    <!-- Botão para Carregar Rota -->
+    <button id="load-route-btn" aria-label="Carregar Rota">Carregar Rota</button>
+
+    <!-- Botão para Iniciar Reconhecimento de Voz -->
+    <button id="start-voice-recognition-btn" aria-label="Iniciar reconhecimento de voz">Iniciar reconhecimento de voz</button>
+
+    <!-- Container para Exibir o Resultado -->
+    <div id="miniplayer-container" class="content" aria-live="assertive"></div>
+
+    <!-- Script para voz e comandos -->
+    <script>
+        // Função para leitura em voz alta
+        function falar(mensagem) {
+            const utterance = new SpeechSynthesisUtterance(mensagem);
+            utterance.lang = 'pt-BR';
+            speechSynthesis.speak(utterance);
+        }
+
+        // Leitura automática do destino selecionado
+        document.getElementById('destination').addEventListener('change', function () {
+            const destino = this.options[this.selectedIndex].text;
+            falar(`Destino selecionado: ${destino}`);
+        });
+
+        // Evento para o botão "Carregar Rota"
+        document.getElementById('load-route-btn').addEventListener('click', function () {
+            const destino = document.getElementById('destination').value;
+            falar(`Carregando rota para ${destino}`);
+            carregarRota(destino);
+        });
+
+        // Função para carregar a rota (simulação)
+        function carregarRota(destino) {
+            const container = document.getElementById('miniplayer-container');
+            container.innerHTML = `Rota para ${destino} em breve...`;
+            falar(`Instruções para o destino ${destino} serão fornecidas.`);
+        }
+
+        // Função para iniciar o reconhecimento de voz (simulado)
+        document.getElementById('start-voice-recognition-btn').addEventListener('click', function () {
+            falar("Reconhecimento de voz iniciado");
+            document.getElementById('miniplayer-container').innerHTML = "Aguardando comando de voz...";
+        });
+    </script>
+</body>
+</html>
