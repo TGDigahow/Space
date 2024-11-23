@@ -3,29 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SpaceMaps</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
 
-        select,
-        button {
-            margin: 10px;
-            padding: 10px;
-            font-size: 16px;
+        .iphone-frame {
+            width: 390px;
+            height: 844px;
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 30px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        iframe {
-            margin-top: 20px;
-            width: 390px; /* Tamanho ideal para iPhone 14 */
-            max-width: 100%;
-            height: 315px;
+        .content {
+            padding: 20px;
+            text-align: center;
+            overflow-y: auto;
+            flex: 1;
         }
 
         img {
@@ -34,66 +42,88 @@
             margin-bottom: 20px;
         }
 
+        select,
+        button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        iframe {
+            margin-top: 20px;
+            width: 100%;
+            height: 180px;
+            border: none;
+        }
+
         #route-description {
             margin-top: 20px;
             padding: 15px;
             border: 1px solid #ccc;
             background-color: #fff;
-            font-size: 18px;
+            font-size: 16px;
             color: #333;
+            border-radius: 5px;
         }
 
         .instagram-button {
-            margin-top: 20px;
-            display: inline-block;
             text-decoration: none;
             color: #fff;
             background-color: #E1306C;
             padding: 10px 20px;
             font-size: 16px;
+            text-align: center;
             border-radius: 5px;
+            width: 100%;
+            display: block;
+            margin: 10px auto;
         }
     </style>
 </head>
 
 <body>
-    <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
+    <div class="iphone-frame">
+        <div class="content">
+            <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
 
-    <!-- Dropdowns para selecionar localização e destino -->
-    <select id="current-location">
-        <option value="">Onde você está?</option>
-        <option value="Biblioteca">Biblioteca</option>
-        <option value="Financeiro">Financeiro</option>
-        <option value="Secretaria">Secretaria</option>
-        <option value="Sala 2.3">Sala 2.3</option>
-        <option value="Portaria">Portaria</option>
-    </select>
-    <select id="destination">
-        <option value="">Selecione um destino</option>
-        <option value="Biblioteca">Biblioteca</option>
-        <option value="Financeiro">Financeiro</option>
-        <option value="Secretaria">Secretaria</option>
-        <option value="Sala 2.3">Sala 2.3</option>
-        <option value="Portaria">Portaria</option>
-    </select>
+            <!-- Dropdowns para selecionar localização e destino -->
+            <select id="current-location">
+                <option value="">Onde você está?</option>
+                <option value="Biblioteca">Biblioteca</option>
+                <option value="Financeiro">Financeiro</option>
+                <option value="Secretaria">Secretaria</option>
+                <option value="Sala 2.3">Sala 2.3</option>
+                <option value="Portaria">Portaria</option>
+            </select>
+            <select id="destination">
+                <option value="">Selecione um destino</option>
+                <option value="Biblioteca">Biblioteca</option>
+                <option value="Financeiro">Financeiro</option>
+                <option value="Secretaria">Secretaria</option>
+                <option value="Sala 2.3">Sala 2.3</option>
+                <option value="Portaria">Portaria</option>
+            </select>
 
-    <!-- Acessibilidade -->
-    <div>
-        <label>
-            <input type="checkbox" id="accessibility">
-            Ativar Acessibilidade
-        </label>
+            <!-- Acessibilidade -->
+            <div>
+                <label>
+                    <input type="checkbox" id="accessibility">
+                    Ativar Acessibilidade
+                </label>
+            </div>
+            <button id="load-route">Carregar Rota</button>
+
+            <!-- Exibição do vídeo -->
+            <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
+
+            <!-- Descrição da rota -->
+            <div id="route-description"></div>
+        </div>
+
+        <!-- Botão para o Instagram -->
+        <a href="https://www.instagram.com/spacemapsapp/" target="_blank" class="instagram-button">Acesse nosso Instagram</a>
     </div>
-    <button id="load-route">Carregar Rota</button>
-
-    <!-- Botão para o Instagram -->
-    <a href="https://www.instagram.com/spacemapsapp/" target="_blank" class="instagram-button">Acesse nosso Instagram</a>
-
-    <!-- Exibição do vídeo -->
-    <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
-
-    <!-- Descrição da rota -->
-    <div id="route-description"></div>
 
     <script>
         const routeDescriptions = {
