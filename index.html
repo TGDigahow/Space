@@ -45,6 +45,14 @@
             margin-bottom: 20px;
         }
 
+        select,
+        button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+
         iframe {
             margin-top: 20px;
             width: 100%;
@@ -61,6 +69,20 @@
             color: #333;
             border-radius: 5px;
         }
+
+        .instagram-button {
+            text-decoration: none;
+            color: #fff;
+            background-color: #E1306C;
+            padding: 10px 20px;
+            font-size: 16px;
+            text-align: center;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 360px;
+            margin: 10px auto;
+            display: block;
+        }
     </style>
 </head>
 
@@ -68,8 +90,43 @@
     <div class="responsive-frame">
         <div class="content">
             <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
+
+            <!-- Dropdowns para selecionar localização e destino -->
+            <select id="current-location">
+                <option value="">Onde você está?</option>
+                <option value="Biblioteca">Biblioteca</option>
+                <option value="Financeiro">Financeiro</option>
+                <option value="Secretaria">Secretaria</option>
+                <option value="Sala 2.3">Sala 2.3</option>
+                <option value="Portaria">Portaria</option>
+            </select>
+            <select id="destination">
+                <option value="">Selecione um destino</option>
+                <option value="Biblioteca">Biblioteca</option>
+                <option value="Financeiro">Financeiro</option>
+                <option value="Secretaria">Secretaria</option>
+                <option value="Sala 2.3">Sala 2.3</option>
+                <option value="Portaria">Portaria</option>
+            </select>
+
+            <!-- Acessibilidade -->
+            <div>
+                <label>
+                    <input type="checkbox" id="accessibility">
+                    Ativar Acessibilidade
+                </label>
+            </div>
+            <button id="load-route">Carregar Rota</button>
+
+            <!-- Exibição do vídeo -->
+            <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
+
+            <!-- Descrição da rota -->
             <div id="route-description"></div>
         </div>
+
+        <!-- Botão para o Instagram -->
+        <a href="https://www.instagram.com/spacemapsapp/" target="_blank" class="instagram-button">Acesse nosso Instagram</a>
     </div>
 
     <script>
@@ -82,7 +139,9 @@
         };
 
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
+        const accessibilityCheckbox = document.getElementById("accessibility");
         const routeDescriptionDiv = document.getElementById("route-description");
+        const videoFrame = document.getElementById("route-video");
 
         const provideAudioFeedback = (message) => {
             if ("speechSynthesis" in window) {
@@ -144,25 +203,37 @@
             const description = routeDescriptions[destination];
             routeDescriptionDiv.textContent = description;
 
-            const videoFrame = document.createElement("iframe");
             videoFrame.src = videoUrl;
-            videoFrame.frameBorder = "0";
-            videoFrame.allow = "autoplay";
-            videoFrame.style.width = "100%";
-            videoFrame.style.height = "180px";
-
-            routeDescriptionDiv.innerHTML = ""; // Limpa o conteúdo antes de exibir a nova rota
-            routeDescriptionDiv.appendChild(videoFrame);
-
             provideAudioFeedback(description);
         };
 
-        // Perguntar ao abrir a página
+        document.getElementById("load-route").addEventListener("click", () => {
+            const currentLocation = document.getElementById("current-location").value;
+            const destination = document.getElementById("destination").value;
+
+            if (!currentLocation || !destination) {
+                alert("Selecione um local de partida e um destino.");
+                return;
+            }
+
+            if (currentLocation === destination) {
+                alert("O ponto de partida e o destino são iguais.");
+                return;
+            }
+
+            const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
+            routeDescriptionDiv.textContent = description;
+            videoFrame.src = videoUrl;
+
+            provideAudioFeedback(description);
+        });
+
         window.onload = () => {
             provideAudioFeedback("Deseja ativar a acessibilidade?");
             listenForVoiceInput((response) => {
                 if (response.toLowerCase() === "sim") {
                     provideAudioFeedback("Acessibilidade ativada.");
+                    accessibilityCheckbox.checked = true;
                     askForDestination();
                 } else {
                     provideAudioFeedback("Acessibilidade desativada.");
