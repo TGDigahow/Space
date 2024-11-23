@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=390, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>SpaceMaps</title>
     <style>
         body {
@@ -17,9 +17,11 @@
             height: 100vh;
         }
 
-        .iphone-frame {
-            width: 390px;
-            height: 844px;
+        .responsive-frame {
+            width: 90vw; /* Usa 90% da largura da tela */
+            max-width: 390px; /* Não ultrapassa o tamanho do iPhone */
+            height: 95vh; /* Usa 95% da altura da tela */
+            max-height: 844px; /* Altura máxima do iPhone */
             background: white;
             border: 2px solid #ccc;
             border-radius: 30px;
@@ -30,16 +32,17 @@
         }
 
         .content {
-            padding: 20px;
+            padding: 5%;
             text-align: center;
             overflow-y: auto;
             flex: 1;
         }
 
         img {
-            width: 150px;
+            width: 40%; /* Escala proporcionalmente à largura */
+            max-width: 150px; /* Limite máximo para imagens grandes */
             height: auto;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         select,
@@ -58,7 +61,7 @@
         }
 
         #route-description {
-            margin-top: 30px;
+            margin-top: 20px;
             padding: 15px;
             border: 1px solid #ccc;
             background-color: #fff;
@@ -75,15 +78,16 @@
             font-size: 16px;
             text-align: center;
             border-radius: 5px;
-            width: 100%;
-            display: block;
+            width: 90%; /* Ajusta à largura da tela */
+            max-width: 360px; /* Tamanho máximo do botão */
             margin: 10px auto;
+            display: block;
         }
     </style>
 </head>
 
 <body>
-    <div class="iphone-frame">
+    <div class="responsive-frame">
         <div class="content">
             <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
 
