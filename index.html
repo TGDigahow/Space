@@ -18,10 +18,10 @@
         }
 
         .responsive-frame {
-            width: 90vw; /* Usa 90% da largura da tela */
-            max-width: 390px; /* Não ultrapassa o tamanho do iPhone */
-            height: 95vh; /* Usa 95% da altura da tela */
-            max-height: 844px; /* Altura máxima do iPhone */
+            width: 90vw;
+            max-width: 390px;
+            height: 95vh;
+            max-height: 844px;
             background: white;
             border: 2px solid #ccc;
             border-radius: 30px;
@@ -39,8 +39,8 @@
         }
 
         img {
-            width: 40%; /* Escala proporcionalmente à largura */
-            max-width: 150px; /* Limite máximo para imagens grandes */
+            width: 40%;
+            max-width: 150px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -78,8 +78,8 @@
             font-size: 16px;
             text-align: center;
             border-radius: 5px;
-            width: 90%; /* Ajusta à largura da tela */
-            max-width: 360px; /* Tamanho máximo do botão */
+            width: 90%;
+            max-width: 360px;
             margin: 10px auto;
             display: block;
         }
@@ -89,24 +89,30 @@
 <body>
     <div class="responsive-frame">
         <div class="content">
-            <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
+            <img src="https://via.placeholder.com/150" alt="Logo SpaceMaps" id="logo-image">
 
             <!-- Dropdowns para selecionar localização e destino -->
             <select id="current-location">
                 <option value="">Onde você está?</option>
-                <option value="Biblioteca">Biblioteca</option>
+                <option value="Auditório">Auditório</option>
+                <option value="Banheiros">Banheiros</option>
+                <option value="Elevador">Elevador</option>
+                <option value="Empréstimo de Equipamentos">Empréstimo de Equipamentos</option>
                 <option value="Financeiro">Financeiro</option>
-                <option value="Secretaria">Secretaria</option>
-                <option value="Sala 2.3">Sala 2.3</option>
+                <option value="Nadis">NAdis (Núcleo de Apoio ao Discente)</option>
                 <option value="Portaria">Portaria</option>
+                <option value="Secretaria">Secretaria</option>
             </select>
             <select id="destination">
                 <option value="">Selecione um destino</option>
-                <option value="Biblioteca">Biblioteca</option>
+                <option value="Auditório">Auditório</option>
+                <option value="Banheiros">Banheiros</option>
+                <option value="Elevador">Elevador</option>
+                <option value="Empréstimo de Equipamentos">Empréstimo de Equipamentos</option>
                 <option value="Financeiro">Financeiro</option>
-                <option value="Secretaria">Secretaria</option>
-                <option value="Sala 2.3">Sala 2.3</option>
+                <option value="Nadis">NAdis (Núcleo de Apoio ao Discente)</option>
                 <option value="Portaria">Portaria</option>
+                <option value="Secretaria">Secretaria</option>
             </select>
 
             <!-- Acessibilidade -->
@@ -131,11 +137,14 @@
 
     <script>
         const routeDescriptions = {
-            Biblioteca: "Siga em frente, vire à esquerda e suba as escadas para chegar à biblioteca.",
-            Financeiro: "Vá até o final do corredor e entre na segunda porta à direita para o setor financeiro.",
-            Secretaria: "A secretaria está no térreo, próximo à entrada principal.",
-            "Sala 2.3": "Suba dois lances de escada e vire à direita para a sala 2.3.",
-            Portaria: "A portaria está localizada logo na entrada do prédio."
+            Auditório: "Saia do ponto atual, siga o corredor principal e vire à direita para o auditório.",
+            Banheiros: "Siga pelo corredor até encontrar os banheiros ao lado esquerdo.",
+            Elevador: "Siga pelo corredor até o final e vire à direita para o elevador.",
+            "Empréstimo de Equipamentos": "Suba ao próximo andar e entre na sala ao lado da escada para o empréstimo de equipamentos.",
+            Financeiro: "Siga reto e vire na segunda à esquerda para acessar o financeiro.",
+            Nadis: "Siga até o fim do corredor principal e vire à esquerda para o NAdis.",
+            Portaria: "Atravesse o corredor principal e siga até a entrada do prédio para a portaria.",
+            Secretaria: "Atravesse o corredor principal e vire à direita para a secretaria."
         };
 
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
@@ -149,15 +158,6 @@
                 console.warn("Seu navegador não suporta síntese de voz.");
             }
         }
-
-        // Adicionar feedback ao clicar nos botões se acessibilidade estiver ativa
-        document.querySelectorAll("button, select").forEach(element => {
-            element.addEventListener("click", () => {
-                if (document.getElementById("accessibility").checked) {
-                    provideAudioFeedback(`Você clicou no elemento: ${element.tagName.toLowerCase()}`);
-                }
-            });
-        });
 
         document.getElementById("load-route").addEventListener("click", () => {
             const currentLocation = document.getElementById("current-location").value;
