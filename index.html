@@ -139,7 +139,6 @@
         };
 
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
-        const accessibilityCheckbox = document.getElementById("accessibility");
         const routeDescriptionDiv = document.getElementById("route-description");
         const videoFrame = document.getElementById("route-video");
 
@@ -152,12 +151,12 @@
         };
 
         const listenForVoiceInput = (callback) => {
-            if (!("webkitSpeechRecognition" in window)) {
+            if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
                 provideAudioFeedback("Seu navegador não suporta reconhecimento de voz.");
                 return;
             }
 
-            const recognition = new webkitSpeechRecognition();
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             recognition.lang = "pt-BR";
             recognition.continuous = false;
             recognition.interimResults = false;
@@ -167,7 +166,8 @@
                 callback(userResponse);
             };
 
-            recognition.onerror = () => {
+            recognition.onerror = (event) => {
+                console.error("Erro no reconhecimento de voz:", event.error);
                 provideAudioFeedback("Não foi possível entender. Tente novamente.");
             };
 
@@ -212,7 +212,6 @@
             listenForVoiceInput((response) => {
                 if (response.toLowerCase() === "sim") {
                     provideAudioFeedback("Acessibilidade ativada.");
-                    accessibilityCheckbox.checked = true;
                     askForDestination();
                 } else {
                     provideAudioFeedback("Acessibilidade desativada.");
