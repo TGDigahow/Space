@@ -14,7 +14,8 @@
             background-color: #f4f4f4;
         }
 
-        select, button {
+        select,
+        button {
             margin: 10px;
             padding: 10px;
             font-size: 16px;
@@ -22,8 +23,8 @@
 
         iframe {
             margin-top: 20px;
-            width: 100%;
-            max-width: 1170px;
+            width: 390px; /* Tamanho ideal para iPhone 14 */
+            max-width: 100%;
             height: 315px;
         }
 
@@ -40,6 +41,17 @@
             background-color: #fff;
             font-size: 18px;
             color: #333;
+        }
+
+        .instagram-button {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #fff;
+            background-color: #E1306C;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
         }
     </style>
 </head>
@@ -74,6 +86,9 @@
     </div>
     <button id="load-route">Carregar Rota</button>
 
+    <!-- Botão para o Instagram -->
+    <a href="https://www.instagram.com/spacemapsapp/" target="_blank" class="instagram-button">Acesse nosso Instagram</a>
+
     <!-- Exibição do vídeo -->
     <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
 
@@ -90,6 +105,25 @@
         };
 
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
+
+        function provideAudioFeedback(message) {
+            if ("speechSynthesis" in window) {
+                const utterance = new SpeechSynthesisUtterance(message);
+                utterance.lang = "pt-BR";
+                window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("Seu navegador não suporta síntese de voz.");
+            }
+        }
+
+        // Adicionar feedback ao clicar nos botões se acessibilidade estiver ativa
+        document.querySelectorAll("button, select").forEach(element => {
+            element.addEventListener("click", () => {
+                if (document.getElementById("accessibility").checked) {
+                    provideAudioFeedback(`Você clicou no elemento: ${element.tagName.toLowerCase()}`);
+                }
+            });
+        });
 
         document.getElementById("load-route").addEventListener("click", () => {
             const currentLocation = document.getElementById("current-location").value;
@@ -112,13 +146,7 @@
             const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
             routeDescriptionDiv.textContent = description;
 
-            if ("speechSynthesis" in window) {
-                const speech = new SpeechSynthesisUtterance(description);
-                speech.lang = "pt-BR";
-                window.speechSynthesis.speak(speech);
-            } else {
-                alert("Seu navegador não suporta síntese de voz.");
-            }
+            provideAudioFeedback(description);
 
             // Carregar vídeo associado à rota
             videoFrame.src = videoUrl;
@@ -126,9 +154,7 @@
             // Feedback verbal ao ativar acessibilidade
             if (accessibility) {
                 const feedback = `Partida selecionada: ${currentLocation}. Destino: ${destination}. Carregando rota.`;
-                const voice = new SpeechSynthesisUtterance(feedback);
-                voice.lang = "pt-BR";
-                window.speechSynthesis.speak(voice);
+                provideAudioFeedback(feedback);
             }
         });
     </script>
