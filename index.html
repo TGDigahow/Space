@@ -18,10 +18,10 @@
         }
 
         .responsive-frame {
-            width: 90vw; /* Usa 90% da largura da tela */
-            max-width: 390px; /* Não ultrapassa o tamanho do iPhone */
-            height: 95vh; /* Usa 95% da altura da tela */
-            max-height: 844px; /* Altura máxima do iPhone */
+            width: 90vw;
+            max-width: 390px;
+            height: 95vh;
+            max-height: 844px;
             background: white;
             border: 2px solid #ccc;
             border-radius: 30px;
@@ -39,8 +39,8 @@
         }
 
         img {
-            width: 40%; /* Escala proporcionalmente à largura */
-            max-width: 150px; /* Limite máximo para imagens grandes */
+            width: 40%;
+            max-width: 150px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -78,8 +78,8 @@
             font-size: 16px;
             text-align: center;
             border-radius: 5px;
-            width: 90%; /* Ajusta à largura da tela */
-            max-width: 360px; /* Tamanho máximo do botão */
+            width: 90%;
+            max-width: 360px;
             margin: 10px auto;
             display: block;
         }
@@ -90,42 +90,14 @@
     <div class="responsive-frame">
         <div class="content">
             <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
-
-            <!-- Dropdowns para selecionar localização e destino -->
-            <select id="current-location">
-                <option value="">Onde você está?</option>
-                <option value="Biblioteca">Biblioteca</option>
-                <option value="Financeiro">Financeiro</option>
-                <option value="Secretaria">Secretaria</option>
-                <option value="Sala 2.3">Sala 2.3</option>
-                <option value="Portaria">Portaria</option>
-            </select>
-            <select id="destination">
-                <option value="">Selecione um destino</option>
-                <option value="Biblioteca">Biblioteca</option>
-                <option value="Financeiro">Financeiro</option>
-                <option value="Secretaria">Secretaria</option>
-                <option value="Sala 2.3">Sala 2.3</option>
-                <option value="Portaria">Portaria</option>
-            </select>
-
-            <!-- Acessibilidade -->
             <div>
                 <label>
                     <input type="checkbox" id="accessibility">
                     Ativar Acessibilidade
                 </label>
             </div>
-            <button id="load-route">Carregar Rota</button>
-
-            <!-- Exibição do vídeo -->
-            <iframe id="route-video" src="" frameborder="0" allow="autoplay"></iframe>
-
-            <!-- Descrição da rota -->
             <div id="route-description"></div>
         </div>
-
-        <!-- Botão para o Instagram -->
         <a href="https://www.instagram.com/spacemapsapp/" target="_blank" class="instagram-button">Acesse nosso Instagram</a>
     </div>
 
@@ -139,59 +111,81 @@
         };
 
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
+        const accessibilityCheckbox = document.getElementById("accessibility");
+        const routeDescriptionDiv = document.getElementById("route-description");
 
-        function provideAudioFeedback(message) {
+        const provideAudioFeedback = (message) => {
             if ("speechSynthesis" in window) {
                 const utterance = new SpeechSynthesisUtterance(message);
                 utterance.lang = "pt-BR";
                 window.speechSynthesis.speak(utterance);
-            } else {
-                console.warn("Seu navegador não suporta síntese de voz.");
             }
-        }
+        };
 
-        // Adicionar feedback ao clicar nos botões se acessibilidade estiver ativa
-        document.querySelectorAll("button, select").forEach(element => {
-            element.addEventListener("click", () => {
-                if (document.getElementById("accessibility").checked) {
-                    provideAudioFeedback(`Você clicou no elemento: ${element.tagName.toLowerCase()}`);
-                }
-            });
+        const listenForVoiceInput = (callback) => {
+            if (!("webkitSpeechRecognition" in window)) {
+                provideAudioFeedback("Seu navegador não suporta reconhecimento de voz.");
+                return;
+            }
+
+            const recognition = new webkitSpeechRecognition();
+            recognition.lang = "pt-BR";
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onresult = (event) => {
+                const userResponse = event.results[0][0].transcript.trim();
+                callback(userResponse);
+            };
+
+            recognition.onerror = () => {
+                provideAudioFeedback("Não foi possível entender. Tente novamente.");
+            };
+
+            recognition.start();
+        };
+
+        accessibilityCheckbox.addEventListener("change", () => {
+            if (accessibilityCheckbox.checked) {
+                provideAudioFeedback("Acessibilidade ativada. Qual é o seu destino?");
+                listenForVoiceInput((destination) => {
+                    if (routeDescriptions[destination]) {
+                        provideAudioFeedback(`Deseja ir para ${destination}?`);
+                        listenForVoiceInput((confirmation) => {
+                            if (confirmation.toLowerCase() === "sim") {
+                                provideAudioFeedback(`Carregando rota para ${destination}.`);
+                                loadRoute(destination);
+                            } else {
+                                provideAudioFeedback("Destino cancelado.");
+                            }
+                        });
+                    } else {
+                        provideAudioFeedback("Destino inválido. Tente novamente.");
+                    }
+                });
+            } else {
+                provideAudioFeedback("Acessibilidade desativada.");
+            }
         });
 
-        document.getElementById("load-route").addEventListener("click", () => {
-            const currentLocation = document.getElementById("current-location").value;
-            const destination = document.getElementById("destination").value;
-            const accessibility = document.getElementById("accessibility").checked;
-            const videoFrame = document.getElementById("route-video");
-            const routeDescriptionDiv = document.getElementById("route-description");
-
-            if (!currentLocation || !destination) {
-                alert("Selecione um local de partida e um destino.");
-                return;
-            }
-
-            if (currentLocation === destination) {
-                alert("O ponto de partida e o destino são iguais.");
-                return;
-            }
-
-            // Informar rota via texto e áudio
-            const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
+        const loadRoute = (destination) => {
+            const description = routeDescriptions[destination];
             routeDescriptionDiv.textContent = description;
 
-            provideAudioFeedback(description);
-
-            // Carregar vídeo associado à rota
+            const videoFrame = document.createElement("iframe");
             videoFrame.src = videoUrl;
+            videoFrame.frameBorder = "0";
+            videoFrame.allow = "autoplay";
+            videoFrame.style.width = "100%";
+            videoFrame.style.height = "180px";
 
-            // Feedback verbal ao ativar acessibilidade
-            if (accessibility) {
-                const feedback = `Partida selecionada: ${currentLocation}. Destino: ${destination}. Carregando rota.`;
-                provideAudioFeedback(feedback);
-            }
-        });
+            routeDescriptionDiv.innerHTML = ""; // Limpa o conteúdo antes de exibir a nova rota
+            routeDescriptionDiv.appendChild(videoFrame);
+
+            provideAudioFeedback(description);
+        };
     </script>
 </body>
 
 </html>
+
