@@ -154,7 +154,7 @@
         document.querySelectorAll("button, select").forEach(element => {
             element.addEventListener("click", () => {
                 if (document.getElementById("accessibility").checked) {
-                    provideAudioFeedback(Você clicou no elemento: ${element.tagName.toLowerCase()});
+                    provideAudioFeedback(`Você clicou no elemento: ${element.tagName.toLowerCase()}`);
                 }
             });
         });
@@ -177,7 +177,7 @@
             }
 
             // Informar rota via texto e áudio
-            const description = Saindo de ${currentLocation}. ${routeDescriptions[destination]};
+            const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
             routeDescriptionDiv.textContent = description;
 
             provideAudioFeedback(description);
@@ -187,7 +187,7 @@
 
             // Feedback verbal ao ativar acessibilidade
             if (accessibility) {
-                const feedback = Partida selecionada: ${currentLocation}. Destino: ${destination}. Carregando rota.;
+                const feedback = `Partida selecionada: ${currentLocation}. Destino: ${destination}. Carregando rota.`;
                 provideAudioFeedback(feedback);
             }
         });
