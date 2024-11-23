@@ -207,29 +207,8 @@
             provideAudioFeedback(description);
         };
 
-        document.getElementById("load-route").addEventListener("click", () => {
-            const currentLocation = document.getElementById("current-location").value;
-            const destination = document.getElementById("destination").value;
-
-            if (!currentLocation || !destination) {
-                alert("Selecione um local de partida e um destino.");
-                return;
-            }
-
-            if (currentLocation === destination) {
-                alert("O ponto de partida e o destino são iguais.");
-                return;
-            }
-
-            const description = `Saindo de ${currentLocation}. ${routeDescriptions[destination]}`;
-            routeDescriptionDiv.textContent = description;
-            videoFrame.src = videoUrl;
-
-            provideAudioFeedback(description);
-        });
-
         window.onload = () => {
-            provideAudioFeedback("Deseja ativar a acessibilidade?");
+            provideAudioFeedback("Deseja acionar a acessibilidade?");
             listenForVoiceInput((response) => {
                 if (response.toLowerCase() === "sim") {
                     provideAudioFeedback("Acessibilidade ativada.");
