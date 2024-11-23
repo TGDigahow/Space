@@ -18,10 +18,10 @@
         }
 
         .responsive-frame {
-            width: 90vw;
-            max-width: 390px;
-            height: 95vh;
-            max-height: 844px;
+            width: 90vw; /* Usa 90% da largura da tela */
+            max-width: 390px; /* Não ultrapassa o tamanho do iPhone */
+            height: 95vh; /* Usa 95% da altura da tela */
+            max-height: 844px; /* Altura máxima do iPhone */
             background: white;
             border: 2px solid #ccc;
             border-radius: 30px;
@@ -39,8 +39,8 @@
         }
 
         img {
-            width: 40%;
-            max-width: 150px;
+            width: 40%; /* Escala proporcionalmente à largura */
+            max-width: 150px; /* Limite máximo para imagens grandes */
             height: auto;
             margin-bottom: 20px;
         }
@@ -78,8 +78,8 @@
             font-size: 16px;
             text-align: center;
             border-radius: 5px;
-            width: 90%;
-            max-width: 360px;
+            width: 90%; /* Ajusta à largura da tela */
+            max-width: 360px; /* Tamanho máximo do botão */
             margin: 10px auto;
             display: block;
         }
@@ -89,8 +89,7 @@
 <body>
     <div class="responsive-frame">
         <div class="content">
-            <!-- Substituído o link da imagem por um exemplo local -->
-            <img src="https://via.placeholder.com/150" alt="Logo SpaceMaps" id="logo-image">
+            <img src="https://raw.githubusercontent.com/TGDigahow/Space/main/spacemapslogo.png" alt="Logo SpaceMaps">
 
             <!-- Dropdowns para selecionar localização e destino -->
             <select id="current-location">
@@ -140,85 +139,58 @@
         };
 
         const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
-        const routeDescriptionDiv = document.getElementById("route-description");
-        const videoFrame = document.getElementById("route-video");
 
-        const provideAudioFeedback = (message) => {
+        function provideAudioFeedback(message) {
             if ("speechSynthesis" in window) {
                 const utterance = new SpeechSynthesisUtterance(message);
                 utterance.lang = "pt-BR";
                 window.speechSynthesis.speak(utterance);
+            } else {
+                console.warn("Seu navegador não suporta síntese de voz.");
             }
-        };
+        }
 
-        const listenForVoiceInput = (callback) => {
-            if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
-                provideAudioFeedback("Seu navegador não suporta reconhecimento de voz.");
+        // Adicionar feedback ao clicar nos botões se acessibilidade estiver ativa
+        document.querySelectorAll("button, select").forEach(element => {
+            element.addEventListener("click", () => {
+                if (document.getElementById("accessibility").checked) {
+                    provideAudioFeedback(Você clicou no elemento: ${element.tagName.toLowerCase()});
+                }
+            });
+        });
+
+        document.getElementById("load-route").addEventListener("click", () => {
+            const currentLocation = document.getElementById("current-location").value;
+            const destination = document.getElementById("destination").value;
+            const accessibility = document.getElementById("accessibility").checked;
+            const videoFrame = document.getElementById("route-video");
+            const routeDescriptionDiv = document.getElementById("route-description");
+
+            if (!currentLocation || !destination) {
+                alert("Selecione um local de partida e um destino.");
                 return;
             }
 
-            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = "pt-BR";
-            recognition.continuous = false;
-            recognition.interimResults = false;
+            if (currentLocation === destination) {
+                alert("O ponto de partida e o destino são iguais.");
+                return;
+            }
 
-            recognition.onresult = (event) => {
-                const userResponse = event.results[0][0].transcript.trim();
-                callback(userResponse);
-            };
-
-            recognition.onerror = (event) => {
-                console.error("Erro no reconhecimento de voz:", event.error);
-                provideAudioFeedback("Não foi possível entender. Tente novamente.");
-            };
-
-            recognition.start();
-        };
-
-        const askForDestination = () => {
-            provideAudioFeedback("Qual é o seu destino?");
-            listenForVoiceInput((destination) => {
-                if (routeDescriptions[destination]) {
-                    provideAudioFeedback(`Deseja ir para ${destination}?`);
-                    setTimeout(() => {
-                        listenForVoiceInput((confirmation) => {
-                            if (confirmation.toLowerCase() === "sim") {
-                                provideAudioFeedback(`Carregando rota para ${destination}.`);
-                                loadRoute(destination);
-                            } else if (confirmation.toLowerCase() === "não") {
-                                askForDestination();
-                            } else {
-                                provideAudioFeedback("Resposta não compreendida. Tente novamente.");
-                                askForDestination();
-                            }
-                        });
-                    }, 2000);
-                } else {
-                    provideAudioFeedback("Destino inválido. Tente novamente.");
-                    askForDestination();
-                }
-            });
-        };
-
-        const loadRoute = (destination) => {
-            const description = routeDescriptions[destination];
+            // Informar rota via texto e áudio
+            const description = Saindo de ${currentLocation}. ${routeDescriptions[destination]};
             routeDescriptionDiv.textContent = description;
 
-            videoFrame.src = videoUrl;
             provideAudioFeedback(description);
-        };
 
-        window.onload = () => {
-            provideAudioFeedback("Deseja acionar a acessibilidade?");
-            listenForVoiceInput((response) => {
-                if (response.toLowerCase() === "sim") {
-                    provideAudioFeedback("Acessibilidade ativada.");
-                    askForDestination();
-                } else {
-                    provideAudioFeedback("Acessibilidade desativada.");
-                }
-            });
-        };
+            // Carregar vídeo associado à rota
+            videoFrame.src = videoUrl;
+
+            // Feedback verbal ao ativar acessibilidade
+            if (accessibility) {
+                const feedback = Partida selecionada: ${currentLocation}. Destino: ${destination}. Carregando rota.;
+                provideAudioFeedback(feedback);
+            }
+        });
     </script>
 </body>
 
