@@ -190,7 +190,8 @@
                     document.getElementById("current-location").value = response;
                     provideAudioFeedback(`Local de partida configurado como ${response}. Agora diga o destino.`);
                     activateVoiceRecognition((destination) => {
-                        document.getElementById("destination").value = destination;
+                        document.getElementById("destination").value = response;
+                        destination;
                         provideAudioFeedback(`Destino configurado como ${destination}. Agora você pode carregar a rota.`);
                     });
                 });
