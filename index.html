@@ -191,8 +191,7 @@
                     provideAudioFeedback(`Local de partida configurado como ${response}. Agora diga o destino.`);
                     activateVoiceRecognition((destination) => {
                         document.getElementById("destination").value = response;
-                        destination;
-                        provideAudioFeedback(`Destino configurado como ${destination}. Agora você pode carregar a rota.`);
+                    provideAudioFeedback(`Destino configurado como ${destination}. Agora você pode carregar a rota.`);
                     });
                 });
             } else {
