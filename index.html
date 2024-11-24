@@ -147,7 +147,7 @@
             Secretaria: "Atravesse o corredor principal e vire à direita para a secretaria."
         };
 
-        const videoUrl = "https://www.youtube.com/embed/example_video_id?autoplay=1&mute=1";
+        const videoUrl = "https://www.youtube.com/embed/A9toVIeSa3E?start=17&autoplay=1";
 
         function provideAudioFeedback(message) {
             if ("speechSynthesis" in window) {
@@ -183,17 +183,34 @@
             recognition.start();
         }
 
+        function delayExecution(callback, delay) {
+            setTimeout(callback, delay);
+        }
+
         document.getElementById("accessibility").addEventListener("change", (event) => {
             if (event.target.checked) {
                 provideAudioFeedback("Acessibilidade ativada. Por favor, diga o local de partida.");
-                activateVoiceRecognition((response) => {
-                    document.getElementById("current-location").value = response;
-                    provideAudioFeedback(`Local de partida configurado como ${response}. Agora diga o destino.`);
-                    activateVoiceRecognition((destination) => {
-                        document.getElementById("destination").value = response;
-                    provideAudioFeedback(`Destino configurado como ${destination}. Agora você pode carregar a rota.`);
+                delayExecution(() => {
+                    activateVoiceRecognition((start) => {
+                        document.getElementById("current-location").value = start;
+                        provideAudioFeedback(`Local de partida configurado como ${start}. Agora diga o destino.`);
+                        delayExecution(() => {
+                            activateVoiceRecognition((end) => {
+                                document.getElementById("destination").value = end;
+                                provideAudioFeedback(`Destino configurado como ${end}. Deseja carregar a rota?`);
+                                delayExecution(() => {
+                                    activateVoiceRecognition((response) => {
+                                        if (response.toLowerCase() === "sim") {
+                                            document.getElementById("load-route").click();
+                                        } else {
+                                            provideAudioFeedback("Por favor, informe o destino novamente.");
+                                        }
+                                    });
+                                }, 3000);
+                            });
+                        }, 3000);
                     });
-                });
+                }, 3000);
             } else {
                 provideAudioFeedback("Acessibilidade desativada.");
             }
